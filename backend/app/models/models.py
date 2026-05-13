@@ -1,0 +1,120 @@
+from sqlalchemy import Column, String, Numeric, Boolean, ForeignKey, text
+from sqlalchemy.dialects.postgresql import UUID, TIMESTAMPTZ
+from sqlalchemy.orm import relationship
+from .database import Base
+
+class Users(Base):
+    __tablename__ = "users"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
+    username = Column(String, unique=True, nullable=False)
+    email = Column(String, unique=True, nullable=False)
+    password_hash = Column(String, nullable=False)
+    currency = Column(String, nullable=False, default="USD")
+    created_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"))
+    updated_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"), onupdate=text("now()"))
+
+    buckets = relationship("Buckets", back_populates="user", cascade="all, delete")
+    categories = relationship("Categories", back_populates="user", cascade="all, delete")
+    transactions = relationship("Transactions", back_populates="user", cascade="all, delete")
+    savings_goals = relationship("SavingsGoals", back_populates="user", cascade="all, delete")
+    income = relationship("Income", back_populates="user", cascade="all, delete")
+    debts = relationship("Debts", back_populates="user", cascade="all, delete")
+
+class Buckets(Base):
+    __tablename__ = "buckets"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    name = Column(String, nullable=False)
+    bucket_type = Column(String, nullable=False)  
+    target_percentage = Column(Numeric, nullable=False)
+    alert_threshold = Column(Numeric, nullable=False)
+    created_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"))
+    updated_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"), onupdate=text("now()"))
+
+    user = relationship("Users", back_populates="buckets")
+    categories = relationship("Categories", back_populates="buckets")
+    savings_goals = relationship("SavingsGoals", back_populates="buckets")
+
+class Categories(Base):
+    __tablename__ = "categories"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    bucket_id = Column(UUID(as_uuid=True), ForeignKey("buckets.id"), nullable=False)
+    name = Column(String, nullable=False)
+    is_default = Column(Boolean, nullable=False, default=True)
+    created_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"))
+    updated_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"), onupdate=text("now()"))
+
+    user = relationship("Users", back_populates="categories")
+    buckets = relationship("Buckets", back_populates="categories")
+    transactions = relationship("Transactions", back_populates="category", cascade="all, delete")
+
+class Transactions(Base):
+    __tablename__ = "transactions"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    category_id = Column(UUID(as_uuid=True), ForeignKey("categories.id"), nullable=True)
+    amount = Column(Numeric, nullable=False)
+    description = Column(String, nullable=True)
+    merchant = Column(String, nullable=True)
+    transaction_date = Column(TIMESTAMPTZ, nullable=False)
+    created_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"))
+    updated_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"), onupdate=text("now()"))
+    deleted_at = Column(TIMESTAMPTZ, nullable=True)
+
+    user = relationship("Users", back_populates="transactions")
+    category = relationship("Categories", back_populates="transactions")
+
+class SavingsGoals(Base):
+    __tablename__ = "savings_goals"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    bucket_id = Column(UUID(as_uuid=True), ForeignKey("buckets.id"), nullable=False)
+    name = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    target_amount = Column(Numeric, nullable=False)
+    current_amount = Column(Numeric, nullable=False, default=0)
+    due_date = Column(TIMESTAMPTZ, nullable=True)
+    created_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"))
+    updated_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"), onupdate=text("now()"))
+    deleted_at = Column(TIMESTAMPTZ, nullable=True)
+
+    user = relationship("Users", back_populates="savings_goals")
+    buckets = relationship("Buckets", back_populates="savings_goals")
+
+class Income(Base):
+    __tablename__ = "income"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    amount = Column(Numeric, nullable=False)
+    description = Column(String, nullable=True)
+    source = Column(String, nullable=True)
+    frequency = Column(String, nullable=False)
+    income_date = Column(TIMESTAMPTZ, nullable=False)
+    created_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"))
+    updated_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"), onupdate=text("now()"))
+    deleted_at = Column(TIMESTAMPTZ, nullable=True)
+
+    user = relationship("Users", back_populates="income")
+
+class Debts(Base):
+    __tablename__ = "debts"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    name = Column(String, nullable=False)
+    current_balance = Column(Numeric, nullable=False)
+    apr = Column(Numeric, nullable=False)
+    minimum_payment = Column(Numeric, nullable=False)
+    due_date = Column(TIMESTAMPTZ, nullable=False)
+    created_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"))
+    updated_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"), onupdate=text("now()"))
+    deleted_at = Column(TIMESTAMPTZ, nullable=True)
+
+    user = relationship("Users", back_populates="debts")
