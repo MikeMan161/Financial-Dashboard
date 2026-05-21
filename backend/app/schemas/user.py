@@ -15,8 +15,12 @@ class UserResponse(BaseModel):
     username: str
     email: EmailStr
     created_at: datetime
+    currency: str
 
 class UserInDB(UserResponse):
-    model_config = {"from_attributes": True}
 
     hashed_password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
