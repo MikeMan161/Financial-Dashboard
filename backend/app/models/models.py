@@ -1,3 +1,9 @@
+"""
+Defines all SQLAlchemy ORM models in one place so relationships, foreign keys, and
+cascade rules are easy to reason about together. These models are the single source
+of truth for the database schema in Python — the SQL migration in
+database/migrations/ should always match what is defined here.
+"""
 from sqlalchemy import Column, String, Numeric, Boolean, ForeignKey, text, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship

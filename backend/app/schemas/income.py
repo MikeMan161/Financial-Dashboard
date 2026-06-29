@@ -1,3 +1,8 @@
+"""
+Pydantic schemas for income records. frequency is kept as a plain string rather than
+an enum to stay flexible as the AI layer learns to parse natural-language income
+descriptions (e.g. "biweekly", "twice a month") without requiring a schema change.
+"""
 from pydantic import BaseModel
 from uuid import UUID
 from decimal import Decimal

@@ -1,3 +1,8 @@
+"""
+Pydantic schemas for savings goals, which are scoped to a specific bucket. Storing
+both target_amount and current_amount lets the API compute progress percentage in a
+single read without a separate aggregation query against transactions.
+"""
 from pydantic import BaseModel
 from uuid import UUID
 from decimal import Decimal

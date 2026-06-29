@@ -1,3 +1,8 @@
+"""
+Pydantic schemas for debt records. Capturing balance, APR, and minimum payment as
+structured fields gives the AI layer the data it needs to generate payoff timelines
+and recommendations rather than parsing them from free text.
+"""
 from pydantic import BaseModel
 from uuid import UUID
 from decimal import Decimal

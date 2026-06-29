@@ -1,3 +1,9 @@
+"""
+Pydantic schemas for user-related API operations. Splitting into UserCreate,
+UserResponse, and UserInDB ensures the hashed password is never returned in API
+responses while still having a typed model for internal authentication logic.
+Token holds the JWT shape returned by the login endpoint.
+"""
 from pydantic import BaseModel, EmailStr
 from uuid import UUID
 from datetime import datetime

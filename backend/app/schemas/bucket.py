@@ -1,3 +1,9 @@
+"""
+Pydantic schemas for budget buckets — the top-level spending categories users create
+to allocate their income (e.g. 50% necessities, 30% wants, 20% savings). user_id is
+excluded from BucketCreate so it is always assigned server-side from the authenticated
+user and never trusted from the request body.
+"""
 from pydantic import BaseModel
 from uuid import UUID
 from decimal import Decimal
