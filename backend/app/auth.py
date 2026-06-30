@@ -1,6 +1,6 @@
 """
 This file provides utility functions for authentication
-password hashing/verification, creating/vefitying JWT tokens.
+password hashing/verification, creating/verifying JWT tokens.
 """
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
