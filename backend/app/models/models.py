@@ -1,7 +1,13 @@
-from sqlalchemy import Column, String, Numeric, Boolean, ForeignKey, text
-from sqlalchemy.dialects.postgresql import UUID, TIMESTAMPTZ
+"""
+Defines all SQLAlchemy ORM models in one place so relationships, foreign keys, and
+cascade rules are easy to reason about together. These models are the single source
+of truth for the database schema in Python — the SQL migration in
+database/migrations/ should always match what is defined here.
+"""
+from sqlalchemy import Column, String, Numeric, Boolean, ForeignKey, text, DateTime
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from .database import Base
+from app.database import Base
 
 class Users(Base):
     __tablename__ = "users"
@@ -11,8 +17,8 @@ class Users(Base):
     email = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
     currency = Column(String, nullable=False, default="USD")
-    created_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"))
-    updated_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"), onupdate=text("now()"))
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"))
+    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"), onupdate=text("now()"))
 
     buckets = relationship("Buckets", back_populates="user", cascade="all, delete")
     categories = relationship("Categories", back_populates="user", cascade="all, delete")
@@ -30,8 +36,8 @@ class Buckets(Base):
     bucket_type = Column(String, nullable=False)  
     target_percentage = Column(Numeric, nullable=False)
     alert_threshold = Column(Numeric, nullable=False)
-    created_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"))
-    updated_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"), onupdate=text("now()"))
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"))
+    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"), onupdate=text("now()"))
 
     user = relationship("Users", back_populates="buckets")
     categories = relationship("Categories", back_populates="buckets")
@@ -45,8 +51,8 @@ class Categories(Base):
     bucket_id = Column(UUID(as_uuid=True), ForeignKey("buckets.id"), nullable=False)
     name = Column(String, nullable=False)
     is_default = Column(Boolean, nullable=False, default=True)
-    created_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"))
-    updated_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"), onupdate=text("now()"))
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"))
+    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"), onupdate=text("now()"))
 
     user = relationship("Users", back_populates="categories")
     buckets = relationship("Buckets", back_populates="categories")
@@ -61,10 +67,10 @@ class Transactions(Base):
     amount = Column(Numeric, nullable=False)
     description = Column(String, nullable=True)
     merchant = Column(String, nullable=True)
-    transaction_date = Column(TIMESTAMPTZ, nullable=False)
-    created_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"))
-    updated_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"), onupdate=text("now()"))
-    deleted_at = Column(TIMESTAMPTZ, nullable=True)
+    transaction_date = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"))
+    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"), onupdate=text("now()"))
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     user = relationship("Users", back_populates="transactions")
     category = relationship("Categories", back_populates="transactions")
@@ -79,10 +85,10 @@ class SavingsGoals(Base):
     description = Column(String, nullable=True)
     target_amount = Column(Numeric, nullable=False)
     current_amount = Column(Numeric, nullable=False, default=0)
-    due_date = Column(TIMESTAMPTZ, nullable=True)
-    created_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"))
-    updated_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"), onupdate=text("now()"))
-    deleted_at = Column(TIMESTAMPTZ, nullable=True)
+    due_date = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"))
+    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"), onupdate=text("now()"))
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     user = relationship("Users", back_populates="savings_goals")
     buckets = relationship("Buckets", back_populates="savings_goals")
@@ -96,10 +102,10 @@ class Income(Base):
     description = Column(String, nullable=True)
     source = Column(String, nullable=True)
     frequency = Column(String, nullable=False)
-    income_date = Column(TIMESTAMPTZ, nullable=False)
-    created_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"))
-    updated_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"), onupdate=text("now()"))
-    deleted_at = Column(TIMESTAMPTZ, nullable=True)
+    income_date = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"))
+    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"), onupdate=text("now()"))
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     user = relationship("Users", back_populates="income")
 
@@ -112,9 +118,9 @@ class Debts(Base):
     current_balance = Column(Numeric, nullable=False)
     apr = Column(Numeric, nullable=False)
     minimum_payment = Column(Numeric, nullable=False)
-    due_date = Column(TIMESTAMPTZ, nullable=False)
-    created_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"))
-    updated_at = Column(TIMESTAMPTZ, nullable=False, server_default=text("now()"), onupdate=text("now()"))
-    deleted_at = Column(TIMESTAMPTZ, nullable=True)
+    due_date = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"))
+    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"), onupdate=text("now()"))
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     user = relationship("Users", back_populates="debts")

@@ -1,11 +1,27 @@
+"""
+Entry point for the Financial Dashboard API. Registers all routers and configures
+CORS so the React frontend (localhost:5173) can communicate with the API during
+local development without browser security blocks.
+"""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.routers import auth, users, buckets, categories, transactions, savings_goals, debts, income
 
 app = FastAPI(
     title="Financial Dashboard API",
     description="AI-powered personal finance tracker",
     version="0.1.0"
 )
+
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(buckets.router)
+app.include_router(categories.router)
+app.include_router(transactions.router)
+app.include_router(savings_goals.router)
+app.include_router(debts.router)
+app.include_router(income.router)
 
 app.add_middleware(
     CORSMiddleware,
