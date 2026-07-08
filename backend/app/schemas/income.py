@@ -29,3 +29,4 @@ class IncomeResponse(BaseModel):
     income_date: datetime
     created_at: datetime
     updated_at: datetime
+    

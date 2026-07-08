@@ -1,7 +1,4 @@
-"""
-This file defines APi endpoints for user registration and login
-utilizing utilities from auth.py for password hashing and token management, and dependencies from dependencies.py for protected routes.
-"""
+"""Registration and login endpoints."""
 from app.schemas.user import UserCreate, UserResponse, Token
 from app.database import get_db
 from app.models.models import Users

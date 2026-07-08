@@ -1,3 +1,4 @@
+"""CRUD endpoints for budget buckets."""
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -17,6 +18,13 @@ router = APIRouter(
 async def get_user_buckets(current_user: Users = Depends(get_current_user), db: Session = Depends(get_db)):
     return db.query(Buckets).filter(Buckets.user_id == current_user.id).all()
 
+@router.get("/{bucket_id}", response_model=BucketResponse)
+async def get_bucket(bucket_id: UUID, current_user: Users = Depends(get_current_user), db: Session = Depends(get_db)):
+    Bucket = db.query(Buckets).filter(Buckets.id == bucket_id, Buckets.user_id == current_user.id).first()
+    if not Bucket:
+        raise HTTPException(status_code=404, detail="Bucket not found")
+    return Bucket
+
 @router.post("", response_model=BucketResponse)
 async def create_bucket(
     payload: BucketCreate,
@@ -35,7 +43,7 @@ async def create_bucket(
     db.refresh(new_bucket)
     return new_bucket
 
-@router.patch("/{bucket_id}", response_model=list[BucketResponse])
+@router.patch("/{bucket_id}", response_model=BucketResponse)
 async def update_bucket(
     bucket_id: UUID,
     payload: BucketCreate,
