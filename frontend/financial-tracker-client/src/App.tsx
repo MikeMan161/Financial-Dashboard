@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { login } from './api/auth'
+import { getUser, type UserResponse } from './api/user'
 import Bucket from './components/Bucket'
-import Toolbar from './components/testing'
 
 const buckets = [
   { name: "Fixed Costs", percent: 55 },
@@ -12,6 +12,7 @@ const buckets = [
 
 function App() {
   const [token, setToken] = useState<string | null>(null);
+  const [userInfo, setUserInfo] = useState<UserResponse | null>(null)
 
   async function handleLogin() {
     try {
@@ -20,6 +21,19 @@ function App() {
       console.log("Token Recieved:", newToken);
     } catch (error) {
       console.error("login failed:", error);
+    }
+  }
+  async function getUserInfo() {
+    if (!token) {
+      console.error("No token- Please log in first");
+      return;
+    }
+    try {
+      const newUserInfo = await getUser(token);
+      setUserInfo(newUserInfo)
+      console.log("User Info Recieved:", newUserInfo)
+    } catch (error) {
+      console.error("User Fetch Failed", error);
     }
   }
 
@@ -33,15 +47,13 @@ function App() {
       <ul>
         {buckets.map((bucket) => (
           <Bucket key={bucket.name} name={bucket.name} percent={bucket.percent} />
-
         ))}
       </ul>
-      <Toolbar
-        onPlayMovie={() => alert('Playing')}
-        onUploadImage={() => alert('Uploading')}
-      />
       <button onClick={handleLogin}>Log in</button>
       <p>{token ? "Logged in" : "Not logged in"}</p>
+      <button onClick={getUserInfo}>get user info</button>
+      <p>{userInfo ? userInfo.email : "No user loaded"}</p>
+      <p>{userInfo ? userInfo.username : "No user loaded"}</p>
     </>
   );
 }
