@@ -1,4 +1,7 @@
+import { useState } from 'react'
+import { login } from './api/auth'
 import Bucket from './components/Bucket'
+import Toolbar from './components/testing'
 
 const buckets = [
   { name: "Fixed Costs", percent: 55 },
@@ -8,6 +11,18 @@ const buckets = [
 ];
 
 function App() {
+  const [token, setToken] = useState<string | null>(null);
+
+  async function handleLogin() {
+    try {
+      const newToken = await login("user@example.com", "string");
+      setToken(newToken);
+      console.log("Token Recieved:", newToken);
+    } catch (error) {
+      console.error("login failed:", error);
+    }
+  }
+
   return (
     <>
       <h1>Hello, this is my finance tracker</h1>
@@ -21,6 +36,12 @@ function App() {
 
         ))}
       </ul>
+      <Toolbar
+        onPlayMovie={() => alert('Playing')}
+        onUploadImage={() => alert('Uploading')}
+      />
+      <button onClick={handleLogin}>Log in</button>
+      <p>{token ? "Logged in" : "Not logged in"}</p>
     </>
   );
 }
