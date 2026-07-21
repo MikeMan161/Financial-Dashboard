@@ -6,6 +6,7 @@ from app.dependencies import get_current_user
 from app.models.models import Categories, Users, Buckets
 from app.schemas.category import CategoryCreate, CategoryResponse
 from uuid import UUID
+from app.schemas.user import MessageResponse
 
 router = APIRouter (
     prefix= "/categories",
