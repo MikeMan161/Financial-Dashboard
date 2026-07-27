@@ -1,5 +1,6 @@
 import type { UserResponse } from "../api/user"
 
+
 type UserCardProps = {
     user: UserResponse
 };
