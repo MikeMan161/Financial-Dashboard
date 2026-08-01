@@ -25,7 +25,7 @@ function LoginPage({ setToken }: LoginPageProps) {
 
   return (
     <>
-      <h1>Please Login:</h1>
+      <h1 className="text-2xl font-bold text-center mt-10">Please login</h1>
       <form onSubmit={handleSubmit}>
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
