@@ -28,3 +28,4 @@ class BucketResponse(BaseModel):
     alert_threshold: Decimal
     created_at: datetime
     updated_at: datetime
+    spent: float

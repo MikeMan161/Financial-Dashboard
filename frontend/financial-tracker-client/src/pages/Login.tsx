@@ -16,7 +16,7 @@ function LoginPage({ setToken }: LoginPageProps) {
     try {
       const newToken = await login(email, password);
       setToken(newToken);
-      navigate("/dashboard")
+      navigate("/Dashboard")
       console.log("Token Recieved:", newToken);
     } catch (error) {
       console.error("login failed:", error);

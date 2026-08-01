@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Routes, Route } from 'react-router'
+import { Button } from "@/components/ui/button"
 import LoginPage from './pages/Login'
 import Dashboard from './pages/Dashboard'
 
