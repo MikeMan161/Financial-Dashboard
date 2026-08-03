@@ -1,5 +1,7 @@
 import { API_URL } from "./config";
 
+// Deliberately does not use apiFetch: a 401 here means "wrong credentials",
+// not an expired session, so it must not raise AuthError.
 export async function login(email: string, password: string): Promise<string> {
     const body = new URLSearchParams();
     body.append("username", email);

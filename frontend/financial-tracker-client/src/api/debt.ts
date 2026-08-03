@@ -1,4 +1,4 @@
-import { API_URL } from "./config";
+import { apiFetch } from "./client";
 
 export type DebtResponse = {
     id: string;
@@ -27,63 +27,47 @@ export type UpdateDebt = {
 }
 
 export async function getDebts(token: string): Promise<DebtResponse[]> {
-    const response = await fetch(`${API_URL}/debts`, {
+    const response = await apiFetch(`/debts`, token, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not get debts")
     return response.json();
 }
 
 export async function getOneDebt(token: string, id: string): Promise<DebtResponse> {
-    const response = await fetch(`${API_URL}/debts/${id}`, {
+    const response = await apiFetch(`/debts/${id}`, token, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not get debt")
     return response.json();
 }
 
 export async function getDeletedDebts(token: string): Promise<DebtResponse[]> {
-    const response = await fetch(`${API_URL}/debts/deleted`, {
+    const response = await apiFetch(`/debts/deleted`, token, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not get deleted debts")
     return response.json();
 }
 
 export async function createDebt(token: string, request: CreateDebt): Promise<DebtResponse> {
-    const response = await fetch(`${API_URL}/debts`, {
+    const response = await apiFetch(`/debts`, token, {
         method: 'POST',
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
     });
-    if (!response.ok) throw new Error("Could not create debt")
     return response.json();
 }
 
 export async function updateDebt(token: string, id: string, request: UpdateDebt): Promise<DebtResponse> {
-    const response = await fetch(`${API_URL}/debts/${id}`, {
+    const response = await apiFetch(`/debts/${id}`, token, {
         method: 'PATCH',
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
     });
-    if (!response.ok) throw new Error("Could not update debt")
     return response.json();
 }
 
 export async function deleteDebt(token: string, id: string): Promise<DebtResponse> {
-    const response = await fetch(`${API_URL}/debts/${id}`, {
+    const response = await apiFetch(`/debts/${id}`, token, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not delete debt")
     return response.json();
 }

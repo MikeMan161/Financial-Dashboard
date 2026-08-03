@@ -1,4 +1,4 @@
-import { API_URL } from "./config";
+import { apiFetch } from "./client";
 import type { MessageResponse } from "./types";
 export type CategoryResponse = {
     id: string;
@@ -18,54 +18,40 @@ export type UpdateCategory = {
 }
 
 export async function getCategories(token:string, bucket_id:string): Promise<CategoryResponse[]> {
-    const response = await fetch(`${API_URL}/categories?bucket_id=${bucket_id}`, {
+    const response = await apiFetch(`/categories?bucket_id=${bucket_id}`, token, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not fetch categories");
     return response.json();
 }
 
 export async function getOneCategory(token:string, id:string): Promise<CategoryResponse> {
-    const response = await fetch(`${API_URL}/categories/${id}`, {
+    const response = await apiFetch(`/categories/${id}`, token, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not fetch category");
     return response.json();
 }
 
 export async function createCategory(token:string, request: CreateCategory): Promise<CategoryResponse> {
-    const response = await fetch(`${API_URL}/categories`, {
+    const response = await apiFetch(`/categories`, token, {
         method: 'POST',
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': `application/json`,
-        },
+        headers: { 'Content-Type': `application/json` },
         body: JSON.stringify(request),
     });
-    if (!response.ok) throw new Error("Could not create new category");
     return response.json();
 }
 
 export async function updateCategory(token:string, id:string, request:UpdateCategory ): Promise<CategoryResponse> {
-    const response = await fetch(`${API_URL}/categories/${id}`, {
+    const response = await apiFetch(`/categories/${id}`, token, {
         method: 'PATCH',
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': `application/json`,
-        },
+        headers: { 'Content-Type': `application/json` },
         body: JSON.stringify(request),
     });
-    if (!response.ok) throw new Error("Could not update category");
     return response.json();
 }
 
 export async function deleteCategory(token:string, id:string): Promise<MessageResponse> {
-    const response = await fetch(`${API_URL}/categories/${id}`, {
+    const response = await apiFetch(`/categories/${id}`, token, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not delete category");
     return response.json();
 }
