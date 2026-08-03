@@ -1,4 +1,4 @@
-import { API_URL } from "./config"
+import { apiFetch } from "./client"
 import type { MessageResponse } from "./types"
 
 export type BucketResponse = {
@@ -18,53 +18,38 @@ export type BucketCreate = {
 }
 
 export async function getBuckets(token: string): Promise<BucketResponse[]> {
-  const response = await fetch(`${API_URL}/buckets`, {
-    headers: { authorization: `Bearer ${token}` },
-  });
-  if (!response.ok) throw new Error("Failed to fetch buckets");
+  const response = await apiFetch("/buckets", token)
   return response.json();
 }
 
 export async function getOneBucket(token: string, id: string): Promise<BucketResponse> {
-  const response = await fetch(`${API_URL}/buckets/${id}`, {
+  const response = await apiFetch(`/buckets/${id}`, token, {
     method: 'GET',
-    headers: {Authorization: `Bearer ${token}` },
   });
-  if (!response.ok) throw new Error("Could not fetch bucket")
   return response.json();
 }
 
 export async function createBucket(token: string, request: BucketCreate): Promise<BucketResponse> {
-  const response = await fetch (`${API_URL}/buckets`, {
+  const response = await apiFetch("/buckets", token, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request)
   });
-  if (!response.ok) throw new Error("Could not create bucket")
   return response.json();
 }
 
 export async function updateBucket(token: string, id: string, request: BucketCreate): Promise<BucketResponse> {
-  const response = await fetch(`${API_URL}/buckets/${id}`, {
+  const response = await apiFetch(`/buckets/${id}`, token, {
     method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request)
   });
-  if (!response.ok) throw new Error("Could not update bucket")
   return response.json();
 }
 
 export async function deleteBucket(token: string, id: string): Promise<MessageResponse> {
-  const response = await fetch(`${API_URL}/buckets/${id}`, {
+  const response = await apiFetch(`/buckets/${id}`, token, {
     method: 'DELETE',
-    headers: {Authorization: `Bearer ${token}` },
   });
-  if (!response.ok) throw new Error("Could not delete bucket")
   return response.json();
 }

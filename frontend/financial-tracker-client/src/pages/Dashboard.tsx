@@ -1,29 +1,37 @@
 import { useState, useEffect } from 'react'
-import { Navigate } from 'react-router'
+import { Navigate, useNavigate } from 'react-router'
 import { BucketCard } from '@/components/Bucket';
 import type { BucketResponse } from '@/api/bucket';
 import { getBuckets } from '@/api/bucket';
+import { AuthError } from '@/api/client';
 
 
 
 type DashboardProps = {
     token: string | null;
+    clearToken: () => void
 }
-export default function Dashboard({ token }: DashboardProps) {
+export default function Dashboard({ token, clearToken }: DashboardProps) {
     const [bucketInfo, setBucketInfo] = useState<BucketResponse[] | null>(null)
-    
+    const navigate = useNavigate()
+
     useEffect(() => {
       async function loadBuckets() {
         if (!token) return;
         try {
           const data = await getBuckets(token);
           setBucketInfo(data)
-        } catch (error) {
-          console.error(error);
+        } catch (err) {
+          if (err instanceof AuthError) {
+            clearToken()
+            navigate("/")
+          } else {
+            console.error(err);
+          }
         }
       }
-      loadBuckets();        
-    }, [token])
+      loadBuckets();
+    }, [token, clearToken, navigate])
 
     if (!token) return <Navigate to="/" replace />;
 

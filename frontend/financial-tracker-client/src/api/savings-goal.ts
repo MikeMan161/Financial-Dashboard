@@ -1,4 +1,4 @@
-import { API_URL } from "./config";
+import { apiFetch } from "./client";
 
 export type SavingsGoalResponse = {
     id: string;
@@ -30,66 +30,50 @@ export type UpdateSavingsGoal = {
 }
 
 export async function getSavingsGoals(token: string, bucket_id?: string): Promise<SavingsGoalResponse[]> {
-    const url = bucket_id
-        ? `${API_URL}/savings-goals?bucket_id=${bucket_id}`
-        : `${API_URL}/savings-goals`;
-    const response = await fetch(url, {
+    const path = bucket_id
+        ? `/savings-goals?bucket_id=${bucket_id}`
+        : `/savings-goals`;
+    const response = await apiFetch(path, token, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not get savings goals")
     return response.json();
 }
 
 export async function getOneSavingsGoal(token: string, id: string): Promise<SavingsGoalResponse> {
-    const response = await fetch(`${API_URL}/savings-goals/${id}`, {
+    const response = await apiFetch(`/savings-goals/${id}`, token, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not get savings goal")
     return response.json();
 }
 
 export async function getDeletedSavingsGoals(token: string): Promise<SavingsGoalResponse[]> {
-    const response = await fetch(`${API_URL}/savings-goals/deleted`, {
+    const response = await apiFetch(`/savings-goals/deleted`, token, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not get deleted savings goals")
     return response.json();
 }
 
 export async function createSavingsGoal(token: string, request: CreateSavingsGoal): Promise<SavingsGoalResponse> {
-    const response = await fetch(`${API_URL}/savings-goals`, {
+    const response = await apiFetch(`/savings-goals`, token, {
         method: 'POST',
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
     });
-    if (!response.ok) throw new Error("Could not create savings goal")
     return response.json();
 }
 
 export async function updateSavingsGoal(token: string, id: string, request: UpdateSavingsGoal): Promise<SavingsGoalResponse> {
-    const response = await fetch(`${API_URL}/savings-goals/${id}`, {
+    const response = await apiFetch(`/savings-goals/${id}`, token, {
         method: 'PATCH',
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
     });
-    if (!response.ok) throw new Error("Could not update savings goal")
     return response.json();
 }
 
 export async function deleteSavingsGoal(token: string, id: string): Promise<SavingsGoalResponse> {
-    const response = await fetch(`${API_URL}/savings-goals/${id}`, {
+    const response = await apiFetch(`/savings-goals/${id}`, token, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not delete savings goal")
     return response.json();
 }

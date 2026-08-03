@@ -1,4 +1,4 @@
-import { API_URL } from "./config";
+import { apiFetch } from "./client";
 
 export type IncomeResponse = {
     id: string;
@@ -27,63 +27,47 @@ export type UpdateIncome = {
 }
 
 export async function getIncome(token: string): Promise<IncomeResponse[]> {
-    const response = await fetch(`${API_URL}/income`, {
+    const response = await apiFetch(`/income`, token, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not get income")
     return response.json();
 }
 
 export async function getOneIncome(token: string, id: string): Promise<IncomeResponse> {
-    const response = await fetch(`${API_URL}/income/${id}`, {
+    const response = await apiFetch(`/income/${id}`, token, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not get income entry")
     return response.json();
 }
 
 export async function getDeletedIncome(token: string): Promise<IncomeResponse[]> {
-    const response = await fetch(`${API_URL}/income/deleted`, {
+    const response = await apiFetch(`/income/deleted`, token, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not get deleted income")
     return response.json();
 }
 
 export async function createIncome(token: string, request: CreateIncome): Promise<IncomeResponse> {
-    const response = await fetch(`${API_URL}/income`, {
+    const response = await apiFetch(`/income`, token, {
         method: 'POST',
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
     });
-    if (!response.ok) throw new Error("Could not create income")
     return response.json();
 }
 
 export async function updateIncome(token: string, id: string, request: UpdateIncome): Promise<IncomeResponse> {
-    const response = await fetch(`${API_URL}/income/${id}`, {
+    const response = await apiFetch(`/income/${id}`, token, {
         method: 'PATCH',
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
     });
-    if (!response.ok) throw new Error("Could not update income")
     return response.json();
 }
 
 export async function deleteIncome(token: string, id: string): Promise<IncomeResponse> {
-    const response = await fetch(`${API_URL}/income/${id}`, {
+    const response = await apiFetch(`/income/${id}`, token, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error("Could not delete income")
     return response.json();
 }
