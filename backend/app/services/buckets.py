@@ -26,6 +26,7 @@ def get_bucket_spending(db: Session, current_user: Users) -> list[dict]:
     result = []
     for bucket in buckets:
         spent = spending.get(bucket.id, Decimal(0))
+        limit = current_user.monthly_income * (bucket.target_percentage / 100)
         result.append({
             "id": bucket.id,
             "user_id": bucket.user_id,
@@ -36,5 +37,6 @@ def get_bucket_spending(db: Session, current_user: Users) -> list[dict]:
             "created_at": bucket.created_at,
             "updated_at": bucket.updated_at,
             "spent": spent,
+            "limit": limit
         })
     return result

@@ -31,3 +31,4 @@ class BucketResponse(BaseModel):
 
 class BucketWithSpending(BucketResponse):
     spent: float
+    limit: float

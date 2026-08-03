@@ -19,6 +19,7 @@ class Users(Base):
     currency = Column(String, nullable=False, default="USD")
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"))
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=text("now()"), onupdate=text("now()"))
+    monthly_income = Column(Numeric(10,2), server_default="0")
 
     buckets = relationship("Buckets", back_populates="user", cascade="all, delete")
     categories = relationship("Categories", back_populates="user", cascade="all, delete")
