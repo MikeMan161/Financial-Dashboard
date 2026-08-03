@@ -3,7 +3,7 @@ Pydantic schemas for savings goals, which are scoped to a specific bucket. Stori
 both target_amount and current_amount lets the API compute progress percentage in a
 single read without a separate aggregation query against transactions.
 """
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
 from uuid import UUID
 from decimal import Decimal
 from datetime import datetime
@@ -31,3 +31,7 @@ class SavingsGoalResponse(BaseModel):
     due_date: datetime | None
     created_at: datetime
     updated_at: datetime
+
+    @field_serializer("target_amount", "current_amount")
+    def serialize_decimal(self, value: Decimal) -> float:
+        return float(value)

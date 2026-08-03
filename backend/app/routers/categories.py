@@ -64,7 +64,7 @@ async def update_category (
     if not tempVar:
         raise HTTPException(status_code=404, detail="Category not found")
     
-    verifyBucket = db.query(Buckets).filter(current_user.id == Buckets.user_id, Buckets.id == payload.Buckets_id).first()
+    verifyBucket = db.query(Buckets).filter(current_user.id == Buckets.user_id, Buckets.id == payload.bucket_id).first()
     if not verifyBucket:
         raise HTTPException(status_code=404, detail="Bucket not found")
     
