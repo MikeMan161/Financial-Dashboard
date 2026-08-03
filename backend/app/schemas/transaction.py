@@ -3,7 +3,7 @@ Pydantic schemas for financial transactions. category_id is optional on creation
 because the AI auto-categorization layer assigns it asynchronously after the
 transaction is recorded — transactions can exist uncategorized until that step runs.
 """
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer
 from uuid import UUID
 from decimal import Decimal
 from datetime import datetime, timezone
@@ -29,4 +29,8 @@ class TransactionResponse(BaseModel):
     transaction_date: datetime
     created_at: datetime
     updated_at: datetime
+
+    @field_serializer("amount")
+    def serialize_decimal(self, value: Decimal) -> float:
+        return float(value)
     
