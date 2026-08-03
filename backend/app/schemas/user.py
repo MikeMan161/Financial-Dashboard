@@ -6,7 +6,7 @@ Token holds the JWT shape returned by the login endpoint. CurrencyUpdate validat
 against pycountry's ISO 4217 list instead of a hand-typed set of codes, so the
 accepted currencies stay correct as the standard changes.
 """
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, field_validator, Field
 from uuid import UUID
 from datetime import datetime
 from app.auth import hash_password
@@ -37,6 +37,7 @@ class UserResponse(BaseModel):
     email: EmailStr
     created_at: datetime
     currency: str
+    monthly_income: float
 
 class UserInDB(UserResponse):
 
@@ -64,6 +65,9 @@ class PasswordChange(BaseModel):
 
 class MessageResponse(BaseModel):
     message: str
+
+class UserUpdateIncome(BaseModel):
+    monthly_income: float = Field(ge=0)
 
 
     

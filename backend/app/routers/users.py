@@ -5,7 +5,7 @@ import pycountry
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.models import Users
-from app.schemas.user import UserResponse, UserInDB, Token, CurrencyUpdate, CurrencyInfo, PasswordChange, MessageResponse
+from app.schemas.user import UserResponse, UserInDB, Token, CurrencyUpdate, CurrencyInfo, PasswordChange, MessageResponse, UserUpdateIncome
 from app.auth import hash_password, verify_password
 
 router = APIRouter(
@@ -51,3 +51,14 @@ async def change_password(
     current_user.password_hash = hash_password(payload.new_password)
     db.commit()
     return {"message": "Password updated successfully"}
+
+@router.patch("/me/monthly_income", response_model=UserResponse)
+async def change_monthly_income(
+    payload: UserUpdateIncome,
+    current_user: Users = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    current_user.monthly_income = payload.monthly_income
+    db.commit()
+    db.refresh(current_user)
+    return current_user
