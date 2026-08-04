@@ -20,9 +20,10 @@ async def transaction_create(
     current_user: Users = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    category = db.query(Categories).filter(Categories.id == payload.category_id, Categories.user_id == current_user.id).first()
-    if not category:
-        raise HTTPException(status_code=404, detail="Category not found")
+    if payload.category_id is not None:
+        category = db.query(Categories).filter(Categories.id == payload.category_id, Categories.user_id == current_user.id).first()
+        if not category:
+            raise HTTPException(status_code=404, detail="Category not found")
     new_transaction = Transactions(
         user_id=current_user.id,
         category_id=payload.category_id,
@@ -82,6 +83,10 @@ async def update_transaction(
     current_user: Users = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    if payload.category_id is not None:
+        category = db.query(Categories).filter(Categories.id == payload.category_id, Categories.user_id == current_user.id).first()
+        if not category:
+            raise HTTPException(status_code=404, detail="Category not found")
     transaction = db.query(Transactions).filter(
         Transactions.id == transaction_id,
         Transactions.user_id == current_user.id,
