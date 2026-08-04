@@ -41,8 +41,8 @@ export default function Dashboard({ token, clearToken }: DashboardProps) {
         <BucketCard
           key={bucket.id}
           name={bucket.name}
-          limit={500}
-          spent={150}
+          limit={bucket.limit}
+          spent={bucket.spent}
         />
       ))}
     </>
