@@ -8,6 +8,8 @@ export type BucketResponse = {
   bucket_type: string
   target_percentage: number
   alert_threshold: number
+  limit: number
+  spent: number
 }
 
 export type BucketCreate = {
