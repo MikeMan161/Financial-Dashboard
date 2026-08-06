@@ -19,7 +19,8 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
         username=user.username,
         email=user.email,
         password_hash=hash_password(user.password),
-        currency=user.currency
+        currency=user.currency,
+        monthly_income=user.monthly_income
     )
     db.add(new_user)
     db.commit()

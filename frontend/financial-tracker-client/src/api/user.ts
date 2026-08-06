@@ -6,7 +6,9 @@ export type UserResponse = {
     username: string;
     email: string;
     currency: string;
+    monthly_income: number;
 }
+
 export type UpdatePasswordRequest = {
     current_password: string;
     new_password: string;

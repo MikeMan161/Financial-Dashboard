@@ -23,6 +23,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     currency: str = "USD"
+    monthly_income: float
 
     @field_validator("currency")
     @classmethod
