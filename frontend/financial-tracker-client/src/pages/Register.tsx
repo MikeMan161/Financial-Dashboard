@@ -27,15 +27,28 @@ export default function Register({ setToken }: RegistrationPageProps) {
             setError("Monthly income cannot be negative")
             return
         }
+        if (username.length < 3) {
+            setError("Username must be at least 3 characters long")
+            return
+        }
+        if (password.length < 8) {
+            setError("Password must be at least 8 characters long")
+            return
+        }
         try {
             await register({ username, email, password, monthly_income: income});
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Account creation failed")
+            console.error(err)
+            return
+        }
+        try {
             const newToken = await login(email, password)
-            setToken(newToken);
+            setToken(newToken)
             navigate("/Dashboard")
-            console.log("Account Created!")
-        } catch (error) {
-            setError("Account creation failed")
-            console.error(error)
+        } catch (err) {
+            console.error(err)
+            navigate("/Login", { state: { notice: "Account created - please log in."} })
         }
     }
     

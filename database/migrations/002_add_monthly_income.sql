@@ -1,2 +1,2 @@
-ALTER TABLE user
+ALTER TABLE users
 ADD monthly_income NUMERIC(10,2) DEFAULT 0

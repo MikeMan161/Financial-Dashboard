@@ -12,23 +12,41 @@ from datetime import datetime
 from app.auth import hash_password
 import pycountry
 
+BCRYPT_MAX_PASSWORD_BYTES = 72
+
 def _validate_currency_code(value: str) -> str:
     code = value.upper()
     if pycountry.currencies.get(alpha_3=code) is None:
         raise ValueError(f"'{value}' is not a valid ISO 4217 currency code")
     return code
 
+def _validate_password_length(value: str) -> str:
+    # bcrypt ignores everything past 72 bytes, so a longer password would be
+    # silently truncated before hashing. Measured in bytes, not characters:
+    # non-ASCII characters encode to more than one byte each.
+    if len(value.encode("utf-8")) > BCRYPT_MAX_PASSWORD_BYTES:
+        raise ValueError(
+            f"Password must be at most {BCRYPT_MAX_PASSWORD_BYTES} bytes; "
+            "accented and non-Latin characters count as more than one byte"
+        )
+    return value
+
 class UserCreate(BaseModel):
-    username: str
+    username: str = Field(min_length=3)
     email: EmailStr
-    password: str
+    password: str = Field(min_length=8)
     currency: str = "USD"
-    monthly_income: float
+    monthly_income: float = Field(ge=0)
 
     @field_validator("currency")
     @classmethod
     def validate_currency(cls, value: str) -> str:
         return _validate_currency_code(value)
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, value: str) -> str:
+        return _validate_password_length(value)
 
 class UserResponse(BaseModel):
     model_config = {"from_attributes": True}
@@ -62,7 +80,12 @@ class CurrencyInfo(BaseModel):
 
 class PasswordChange(BaseModel):
     current_password: str
-    new_password: str
+    new_password: str = Field(min_length=8)
+
+    @field_validator("new_password")
+    @classmethod
+    def validate_new_password(cls, value: str) -> str:
+        return _validate_password_length(value)
 
 class MessageResponse(BaseModel):
     message: str
