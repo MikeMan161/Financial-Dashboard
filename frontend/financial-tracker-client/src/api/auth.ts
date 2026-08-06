@@ -22,7 +22,8 @@ export async function login(email: string, password: string): Promise<string> {
     });
 
     if (!response.ok) {
-        throw new Error("Login failed");
+        const data = await response.json().catch(() => null);
+        throw new Error(extractDetail(data, "Login failed"));
     }
 
     const data = await response.json();
@@ -37,7 +38,42 @@ export async function register(request: AccountCreate): Promise<UserResponse> {
     });
 
     if (!response.ok) {
-        throw new Error("Registration Failed");
+        const data = await response.json().catch(() => null);
+        throw new Error(extractDetail(data, "Registration failed"))
     }
     return response.json();
+}
+
+// Maps Pydantic field names, which appear verbatim in a 422's `loc`, to labels
+// fit for display. Unmapped fields fall back to the raw name.
+const FIELD_LABELS: Record<string, string> = {
+    username: "Username",
+    email: "Email",
+    password: "Password",
+    new_password: "New password",
+    current_password: "Current password",
+    currency: "Currency",
+    monthly_income: "Monthly income",
+};
+
+function extractDetail(data: unknown, fallback: string): string {
+    if (typeof data !== "object" || data === null || !("detail" in data)) {
+        return fallback
+    }
+    const detail = (data as { detail: unknown }).detail;
+
+    if (typeof detail === "string") {
+        return detail;
+    }
+    if (Array.isArray(detail) && detail.length > 0) {
+        const first = detail[0];
+        if (typeof first?.msg !== "string") {
+            return fallback;
+        }
+        const field = Array.isArray(first.loc) ? first.loc[first.loc.length - 1] : null;
+        return typeof field === "string"
+            ? `${FIELD_LABELS[field] ?? field}: ${first.msg}`
+            : first.msg;
+    }
+    return fallback;
 }
