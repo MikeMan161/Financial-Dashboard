@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from app.services.seeding import seed_default_buckets
 
 router = APIRouter() 
 
@@ -30,6 +31,8 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
     )
     try:
         db.add(new_user)
+        db.flush()
+        seed_default_buckets(db,new_user)
         db.commit()
     except IntegrityError as e:
         db.rollback()

@@ -4,6 +4,7 @@ import LoginPage from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import LandingPage from './pages/LandingPage'
 import Register from './pages/Register'
+import Buckets from './pages/Buckets'
 
 export default function App() {
   const [token, setToken] = useState<string | null>(
@@ -25,6 +26,7 @@ export default function App() {
       <Route path="/Login" element={<LoginPage setToken={saveToken} />} />
       <Route path="/SignUp" element={<Register setToken={saveToken} />} />
       <Route path="/Dashboard" element={<Dashboard token={token} clearToken={clearToken} />} />
+      <Route path="/Buckets" element={<Buckets token={token} clearToken={clearToken} />} />
     </Routes>
   );
 }
