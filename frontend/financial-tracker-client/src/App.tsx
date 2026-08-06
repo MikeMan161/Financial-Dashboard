@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Routes, Route } from 'react-router'
 import LoginPage from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import LandingPage from './pages/LandingPage'
+import Register from './pages/Register'
 
 export default function App() {
   const [token, setToken] = useState<string | null>(
@@ -19,7 +21,9 @@ export default function App() {
   }
   return (
     <Routes>
-      <Route path="/" element={<LoginPage setToken={saveToken} />} />
+      <Route path="/" element={<LandingPage/>} />
+      <Route path="/Login" element={<LoginPage setToken={saveToken} />} />
+      <Route path="/SignUp" element={<Register setToken={saveToken} />} />
       <Route path="/Dashboard" element={<Dashboard token={token} clearToken={clearToken} />} />
     </Routes>
   );
