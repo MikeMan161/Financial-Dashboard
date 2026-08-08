@@ -25,7 +25,17 @@ export async function apiFetch(
   }
 
   if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`)
+    // FastAPI puts the human-readable reason in `detail`, so surface it instead of a bare
+    // status code. Pydantic's 422 bodies use an array of field errors there rather than a
+    // string, and those aren't worth showing raw — fall back to the status for those.
+    let detail = ""
+    try {
+      const body = await response.json()
+      if (typeof body?.detail === "string") detail = body.detail
+    } catch {
+      // Error body wasn't JSON; the status code is all we have.
+    }
+    throw new Error(detail || `Request failed: ${response.status}`)
   }
 
   return response

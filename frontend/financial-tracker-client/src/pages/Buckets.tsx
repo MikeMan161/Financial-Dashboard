@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Navigate, useNavigate } from 'react-router'
 import type { BucketResponse } from '@/api/bucket'
-import { getBuckets, updateBucket } from '@/api/bucket'
+import { getBuckets, updateBuckets } from '@/api/bucket'
 import { AuthError } from '@/api/client'
 
 type BucketsProps = {
@@ -57,14 +57,14 @@ export default function Buckets({ token, clearToken }: BucketsProps) {
         setNotice("")
         setSaving(true)
         try {
-            for (const bucket of buckets) {
-                await updateBucket(token, bucket.id, {
-                    target_percentage: bucket.target_percentage,
-                    alert_threshold: bucket.alert_threshold,
-                })
-            }
-            // Refetch so spent/limit reflect the new percentages.
-            setBuckets(await getBuckets(token))
+            // One request for all four buckets. The response is the saved plan with
+            // spent/limit already recomputed, so there's no refetch to fail afterwards.
+            const saved = await updateBuckets(token, buckets.map(bucket => ({
+                id: bucket.id,
+                target_percentage: bucket.target_percentage,
+                alert_threshold: bucket.alert_threshold,
+            })))
+            setBuckets(saved)
             setNotice("Saved")
         } catch (err) {
             if (err instanceof AuthError) {
@@ -72,7 +72,10 @@ export default function Buckets({ token, clearToken }: BucketsProps) {
                 navigate("/")
             } else {
                 console.error(err)
-                setError(err instanceof Error ? err.message : "Could not save your changes")
+                // Nothing was written, and `buckets` still holds the edits on screen, so
+                // say so — the user's work is intact and retrying is safe.
+                const reason = err instanceof Error ? err.message : "Could not save your changes"
+                setError(`${reason}. Nothing was saved — your changes are still here.`)
             }
         } finally {
             setSaving(false)

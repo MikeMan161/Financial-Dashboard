@@ -11,9 +11,10 @@ export type BucketResponse = {
   spent: number
 }
 
-// Mirrors the backend BucketUpdate schema: name and bucket_type are intentionally
+// Mirrors the backend BucketAllocation schema: name and bucket_type are intentionally
 // absent because the four seeded envelopes are fixed for the life of the account.
-export type BucketUpdate = {
+export type BucketAllocation = {
+  id: string;
   target_percentage: number;
   alert_threshold: number;
 }
@@ -30,11 +31,14 @@ export async function getOneBucket(token: string, id: string): Promise<BucketRes
   return response.json();
 }
 
-export async function updateBucket(token: string, id: string, request: BucketUpdate): Promise<BucketResponse> {
-  const response = await apiFetch(`/buckets/${id}`, token, {
-    method: 'PATCH',
+// Sends the whole plan in one request. The backend commits all four buckets in a single
+// transaction, so a rejected plan changes nothing server-side, and the response already
+// carries the recomputed spent/limit figures — no follow-up getBuckets needed.
+export async function updateBuckets(token: string, buckets: BucketAllocation[]): Promise<BucketResponse[]> {
+  const response = await apiFetch("/buckets", token, {
+    method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request)
+    body: JSON.stringify({ buckets })
   });
   return response.json();
 }
