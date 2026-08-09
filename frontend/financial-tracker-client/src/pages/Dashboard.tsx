@@ -4,6 +4,8 @@ import { BucketCard } from '@/components/Bucket';
 import type { BucketResponse } from '@/api/bucket';
 import { getBuckets } from '@/api/bucket';
 import { AuthError } from '@/api/client';
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 
 
@@ -36,7 +38,7 @@ export default function Dashboard({ token, clearToken }: DashboardProps) {
     if (!token) return <Navigate to="/" replace />;
 
     return (
-    <div className="p-8 flex flex-col gap-2">
+    <div className="p-8 flex flex-col gap-2 h-full">
       <div className="grid grid-cols-2">
         {bucketInfo && bucketInfo.map((bucket) => (
           <BucketCard
@@ -47,6 +49,11 @@ export default function Dashboard({ token, clearToken }: DashboardProps) {
           />
         ))}
       </div>
+      <div className="flex gap-2 mt-auto">
+        <Input placeholder="Enter transaction" />
+        <Button className="rounded-full">Send</Button>
+      </div>
+      <Button className="self-center" variant="secondary">Manual Entry</Button>
     </div>
   );
 }
