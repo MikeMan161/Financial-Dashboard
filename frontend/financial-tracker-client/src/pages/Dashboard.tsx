@@ -36,15 +36,17 @@ export default function Dashboard({ token, clearToken }: DashboardProps) {
     if (!token) return <Navigate to="/" replace />;
 
     return (
-    <>
-      {bucketInfo && bucketInfo.map((bucket) => (
-        <BucketCard
-          key={bucket.id}
-          name={bucket.name}
-          limit={bucket.limit}
-          spent={bucket.spent}
-        />
-      ))}
-    </>
+    <div className="p-8 flex flex-col gap-2">
+      <div className="grid grid-cols-2">
+        {bucketInfo && bucketInfo.map((bucket) => (
+          <BucketCard
+            key={bucket.id}
+            name={bucket.name}
+            limit={bucket.limit}
+            spent={bucket.spent}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
