@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard'
 import LandingPage from './pages/LandingPage'
 import Register from './pages/Register'
 import Buckets from './pages/Buckets'
+import AppLayout from './components/AppLayout'
 
 export default function App() {
   const [token, setToken] = useState<string | null>(
@@ -25,8 +26,12 @@ export default function App() {
       <Route path="/" element={<LandingPage/>} />
       <Route path="/Login" element={<LoginPage setToken={saveToken} />} />
       <Route path="/SignUp" element={<Register setToken={saveToken} />} />
-      <Route path="/Dashboard" element={<Dashboard token={token} clearToken={clearToken} />} />
-      <Route path="/Buckets" element={<Buckets token={token} clearToken={clearToken} />} />
+
+      <Route element ={<AppLayout />} >
+        <Route path="/Dashboard" element={<Dashboard token={token} clearToken={clearToken} />} />
+        <Route path="/Buckets" element={<Buckets token={token} clearToken={clearToken} />} />
+      </Route>
     </Routes>
+      
   );
 }
