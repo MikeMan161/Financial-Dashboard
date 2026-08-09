@@ -43,11 +43,11 @@ export function BucketCard( { name, limit, spent }: BucketCardProps) {
             <ProgressLabel>{isOver ? "Over Budget" : "Amount Left"}</ProgressLabel>
           </Progress>
         </CardContent>
-        <p>
+        <CardFooter>
           {isOver
             ? `$${over.toFixed(2)} over your $${limit.toFixed(2)} limit`
             : `$${(limit - spent).toFixed(2)} left of $${limit.toFixed(2)}`}
-        </p>
+        </CardFooter>
       </Card>
     </>
     )
