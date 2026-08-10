@@ -24,10 +24,20 @@ export type UpdateTransaction = {
     merchant: string;
 }
 
-export async function getTransactions(token: string, category_id?: string): Promise<TransactionResponse[]> {
-    const path = category_id
-        ? `/transactions?category_id=${category_id}`
-        : `/transactions`;
+// Both filters are optional and independent: no filter returns every transaction,
+// bucket_id scopes to one envelope, category_id to a single category within one.
+export type TransactionFilters = {
+    category_id?: string;
+    bucket_id?: string;
+}
+
+export async function getTransactions(token: string, filters: TransactionFilters = {}): Promise<TransactionResponse[]> {
+    const params = new URLSearchParams();
+    if (filters.category_id) params.set("category_id", filters.category_id);
+    if (filters.bucket_id) params.set("bucket_id", filters.bucket_id);
+
+    const query = params.toString();
+    const path = query ? `/transactions?${query}` : `/transactions`;
     const response = await apiFetch(path, token, {
         method: 'GET',
     });
