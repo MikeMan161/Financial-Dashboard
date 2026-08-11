@@ -22,7 +22,9 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
 
-    "baseUrl": ".",
+    /* No baseUrl: it is deprecated in TS 6 and removed in 7. Since TS 5.0,
+       "paths" entries resolve relative to this file when baseUrl is absent,
+       so the @/* alias keeps working unchanged. */
     "paths": {
       "@/*": [
         "./src/*"
