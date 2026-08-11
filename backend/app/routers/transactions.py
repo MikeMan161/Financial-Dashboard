@@ -1,4 +1,4 @@
-"""CRUD endpoints for transactions. Deletes are soft — deleted_at is stamped. Filterable by category via ?category_id."""
+"""CRUD endpoints for transactions. Deletes are soft — deleted_at is stamped. Filterable by category via ?category_id, or by the owning bucket via ?bucket_id."""
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -42,6 +42,7 @@ async def get_transactions(
     current_user: Users = Depends(get_current_user),
     db: Session = Depends(get_db),
     category_id: UUID | None = None,
+    bucket_id: UUID | None = None,
 ):
     query = db.query(Transactions).filter(
         Transactions.user_id == current_user.id,
@@ -49,6 +50,14 @@ async def get_transactions(
     )
     if category_id:
         query = query.filter(Transactions.category_id == category_id)
+    # A transaction reaches its bucket through its category, so filtering by bucket
+    # means joining Categories. The join is inner, which drops uncategorized
+    # transactions — correct here, since those belong to no bucket.
+    if bucket_id:
+        query = query.join(Categories, Transactions.category_id == Categories.id).filter(
+            Categories.bucket_id == bucket_id,
+            Categories.user_id == current_user.id
+        )
     return query.all()
 
 @router.get("/deleted", response_model=list[TransactionResponse])

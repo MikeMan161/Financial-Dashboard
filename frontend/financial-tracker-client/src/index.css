@@ -21,6 +21,10 @@
     --color-chart-3: var(--chart-3);
     --color-chart-2: var(--chart-2);
     --color-chart-1: var(--chart-1);
+    --color-bucket-fixed-costs: var(--bucket-fixed-costs);
+    --color-bucket-investments: var(--bucket-investments);
+    --color-bucket-savings: var(--bucket-savings);
+    --color-bucket-guilt-free: var(--bucket-guilt-free);
     --color-ring: var(--ring);
     --color-input: var(--input);
     --color-border: var(--border);
@@ -74,6 +78,20 @@
     --chart-3: oklch(0.439 0 0);
     --chart-4: oklch(0.371 0 0);
     --chart-5: oklch(0.269 0 0);
+
+    /* The four envelopes are a fixed, named set, so they get their own keyed
+       tokens rather than generic chart slots — colour follows the bucket, never
+       its position in a response. Hue order (blue, orange, aqua, yellow) was
+       chosen by validation, not taste: it clears the colourblind-separation and
+       normal-vision gates on every adjacent pair in the dial, including the
+       wrap from the last segment back to the first. Aqua and yellow sit under
+       3:1 against the white card, which is why the dial always ships a labelled
+       legend rather than relying on colour alone. */
+    --bucket-fixed-costs: #2a78d6;
+    --bucket-investments: #eb6834;
+    --bucket-savings: #1baf7a;
+    --bucket-guilt-free: #eda100;
+
     --radius: 0.625rem;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
@@ -92,7 +110,11 @@
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.205 0 0);
     --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
+    /* Green is the app's accent. It rides --primary rather than being sprinkled
+       on individual components, so every button, focus ring and active sidebar
+       item picks it up from one place. --primary-foreground stays near-black
+       because the accent is light enough that dark text is the readable pair. */
+    --primary: oklch(0.75 0.16 158);
     --primary-foreground: oklch(0.205 0 0);
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
@@ -104,16 +126,26 @@
     --success: oklch(0.704 0.12 163);
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
+    /* Focus rings inherit the accent so keyboard focus reads as the same colour
+       language as the buttons, rather than a neutral gray outline. */
+    --ring: oklch(0.75 0.16 158);
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
     --chart-4: oklch(0.371 0 0);
     --chart-5: oklch(0.269 0 0);
+
+    /* Same four hues re-stepped for the dark card surface, not an automatic
+       flip — validated as their own set against #262626. */
+    --bucket-fixed-costs: #3987e5;
+    --bucket-investments: #d95926;
+    --bucket-savings: #199e70;
+    --bucket-guilt-free: #c98500;
+
     --sidebar: oklch(0.205 0 0);
     --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.75 0.16 158);
+    --sidebar-primary-foreground: oklch(0.205 0 0);
     --sidebar-accent: oklch(0.269 0 0);
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);

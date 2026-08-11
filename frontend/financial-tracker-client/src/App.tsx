@@ -5,6 +5,9 @@ import Dashboard from './pages/Dashboard'
 import LandingPage from './pages/LandingPage'
 import Register from './pages/Register'
 import Buckets from './pages/Buckets'
+import Transactions from './pages/Transactions'
+import GoalsAndDebts from './pages/GoalsAndDebts'
+import UserPage from './pages/User'
 import AppLayout from './components/AppLayout'
 
 export default function App() {
@@ -30,6 +33,9 @@ export default function App() {
       <Route element ={<AppLayout />} >
         <Route path="/Dashboard" element={<Dashboard token={token} clearToken={clearToken} />} />
         <Route path="/Buckets" element={<Buckets token={token} clearToken={clearToken} />} />
+        <Route path="/Transactions/:bucketId?" element={<Transactions token={token} clearToken={clearToken} />} />
+        <Route path="/GoalsAndDebts" element={<GoalsAndDebts token={token} clearToken={clearToken} />} />
+        <Route path="/User" element={<UserPage token={token} clearToken={clearToken} />} />
       </Route>
     </Routes>
       

@@ -1,6 +1,9 @@
 import { useState } from "react"
 import { register, login } from "@/api/auth"
 import { useNavigate } from "react-router"
+import { Button } from "@/components/ui/button"
+import AuthLayout from "@/components/AuthLayout"
+import AuthField from "@/components/AuthField"
 
 type RegistrationPageProps = {
     setToken: (token: string) => void;
@@ -13,9 +16,9 @@ export default function Register({ setToken }: RegistrationPageProps) {
     const [monthly_income, setMonthly_income] = useState("")
     const [error, setError] = useState("")
     const navigate = useNavigate()
-    
+
     async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault(); 
+        e.preventDefault();
         setError("")
 
         const income = Number(monthly_income)
@@ -51,26 +54,55 @@ export default function Register({ setToken }: RegistrationPageProps) {
             navigate("/Login", { state: { notice: "Account created - please log in."} })
         }
     }
-    
-    
-    
-    
-    
+
     return (
-        <>
-            <h1 className="text-2xl font-bold text-center mt-10">Register:</h1>
-            {error && <p className="text-red-600 text-center">{error}</p>}
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="username">Enter Username:</label>
-                <input id="username" type="text" value={username} name="username" onChange={(e) => setUsername(e.target.value)} />
-                <label htmlFor="email">Enter Email:</label>
-                <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                <label htmlFor="password">Enter Password:</label>
-                <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                <label htmlFor="monthly_income">Enter average monthly income:</label>
-                <input id="Monthly_income" type="text" value = {monthly_income} onChange={(e) => setMonthly_income(e.target.value)} />
-                <button type="submit">Register</button>
+        <AuthLayout
+            title="Create account"
+            switchPrompt="Already have an account?"
+            switchLabel="Log in"
+            switchTo="/Login"
+        >
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <AuthField
+                    id="username"
+                    label="Username"
+                    type="text"
+                    value={username}
+                    onChange={setUsername}
+                    autoComplete="username"
+                    narrow
+                />
+                <AuthField
+                    id="email"
+                    label="Email"
+                    type="email"
+                    value={email}
+                    onChange={setEmail}
+                    autoComplete="email"
+                />
+                <AuthField
+                    id="password"
+                    label="Password"
+                    type="password"
+                    value={password}
+                    onChange={setPassword}
+                    autoComplete="new-password"
+                />
+                <AuthField
+                    id="monthly_income"
+                    label="Average monthly income"
+                    type="text"
+                    value={monthly_income}
+                    onChange={setMonthly_income}
+                    narrow
+                />
+
+                {error && <p className="text-sm text-destructive">{error}</p>}
+
+                <Button type="submit" className="mt-2 h-11 rounded-xl">
+                    Create account
+                </Button>
             </form>
-        </>
+        </AuthLayout>
     )
 }
