@@ -43,6 +43,7 @@ export default function Dashboard({ token, clearToken }: DashboardProps) {
         {bucketInfo && bucketInfo.map((bucket) => (
           <BucketCard
             key={bucket.id}
+            id={bucket.id}
             name={bucket.name}
             limit={bucket.limit}
             spent={bucket.spent}

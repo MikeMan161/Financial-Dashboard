@@ -1,4 +1,5 @@
-import { Card, CardContent, CardHeader, CardFooter, CardTitle, CardDescription, CardAction } from '@/components/ui/card'
+import { Link } from 'react-router'
+import { Card, CardContent, CardHeader, CardFooter, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
 type BucketProps = {
@@ -7,6 +8,7 @@ type BucketProps = {
 }
 
 type BucketCardProps = {
+    id: string;
     name: string;
     spent: number;
     limit: number;
@@ -16,7 +18,7 @@ export function Bucket({ name, percent}: BucketProps) {
     return <li>{name} = target {percent}%</li>;
 }
 
-export function BucketCard( { name, limit, spent }: BucketCardProps) {
+export function BucketCard( { id, name, limit, spent }: BucketCardProps) {
     const over = spent - limit
     const isOver = over > 0
 
@@ -84,7 +86,11 @@ export function BucketCard( { name, limit, spent }: BucketCardProps) {
           </div>
         </CardContent>
         <CardFooter className="justify-center">
-          <Button variant="secondary">See More</Button>
+          {/* render= is this shadcn build's asChild: the button becomes the Link
+              rather than wrapping one, so there is no anchor inside a button. */}
+          <Button variant="secondary" render={<Link to={`/Transactions/${id}`} />}>
+            See More
+          </Button>
         </CardFooter>
       </Card>
     )
