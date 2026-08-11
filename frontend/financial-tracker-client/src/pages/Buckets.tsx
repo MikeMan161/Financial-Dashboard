@@ -3,6 +3,11 @@ import { Navigate, useNavigate } from 'react-router'
 import type { BucketResponse } from '@/api/bucket'
 import { getBuckets, updateBucket } from '@/api/bucket'
 import { AuthError } from '@/api/client'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import BucketAllocationDial from '@/components/BucketAllocationDial'
 
 type BucketsProps = {
     token: string | null;
@@ -37,7 +42,6 @@ export default function Buckets({ token, clearToken }: BucketsProps) {
     }, [token, clearToken, navigate])
 
     if (!token) return <Navigate to="/" replace />
-    if (!buckets) return <p>Loading...</p>
 
     // Edits are held locally until save so the user can move percentages between
     // buckets without each intermediate step hitting the API.
@@ -79,51 +83,96 @@ export default function Buckets({ token, clearToken }: BucketsProps) {
         }
     }
 
-    const total = Math.round(
-        buckets.reduce((sum, bucket) => sum + Number(bucket.target_percentage), 0) * 100
-    ) / 100
+    const total = buckets
+        ? Math.round(
+            buckets.reduce((sum, bucket) => sum + Number(bucket.target_percentage), 0) * 100
+          ) / 100
+        : 0
 
     // Over- and under-allocation are both allowed. We tell the user where they stand
     // and let them decide, rather than blocking the save or rebalancing for them.
     const planMessage =
-        total > 100 ? `Your plan: ${total}% - you've allocated more than you earn. Trimming ${Math.round((total - 100) * 100) / 100}% somewhere will balance it.`
-        : total < 100 ? `Your plan: ${total}% - ${Math.round((100 - total) * 100) / 100}% of your income isn't assigned yet. Worth giving it a job.`
-        : `Your plan: 100% - every dollar has a job.`
+        total > 100 ? `You've allocated ${Math.round((total - 100) * 100) / 100}% more than you earn. Trimming that somewhere will balance it.`
+        : total < 100 ? `${Math.round((100 - total) * 100) / 100}% of your income isn't assigned yet. Worth giving it a job.`
+        : `Every dollar has a job.`
 
     return (
-        <>
-            <h1 className="text-2xl font-bold text-center mt-10">Your Buckets</h1>
-            <p>{planMessage}</p>
-            {error && <p className="text-red-600">{error}</p>}
-            {notice && <p>{notice}</p>}
-            <form onSubmit={handleSave}>
-                {buckets.map(bucket => (
-                    <fieldset key={bucket.id}>
-                        <legend>{bucket.name}</legend>
-                        <label htmlFor={`target-${bucket.id}`}>Target percentage:</label>
-                        <input
-                            id={`target-${bucket.id}`}
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="0.01"
-                            value={bucket.target_percentage}
-                            onChange={(e) => editBucket(bucket.id, "target_percentage", Number(e.target.value))}
-                        />
-                        <label htmlFor={`alert-${bucket.id}`}>Alert threshold:</label>
-                        <input
-                            id={`alert-${bucket.id}`}
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="0.01"
-                            value={bucket.alert_threshold}
-                            onChange={(e) => editBucket(bucket.id, "alert_threshold", Number(e.target.value))}
-                        />
-                    </fieldset>
-                ))}
-                <button type="submit" disabled={saving}>{saving ? "Saving..." : "Save"}</button>
-            </form>
-        </>
+        <div className="p-8 flex flex-col gap-4 h-full">
+            <h1 className="text-2xl font-bold">Your Buckets</h1>
+
+            {!buckets ? (
+                <p className="text-sm text-muted-foreground">Loading...</p>
+            ) : (
+                <div className="grid gap-4 lg:grid-cols-[1fr_20rem]">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base font-medium">Allocation plan</CardTitle>
+                        </CardHeader>
+
+                        <CardContent>
+                            <form id="bucket-plan" onSubmit={handleSave} className="flex flex-col gap-4">
+                                {buckets.map(bucket => (
+                                    <div key={bucket.id} className="flex flex-col gap-2">
+                                        <span className="text-sm font-medium">{bucket.name}</span>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <label className="flex flex-col gap-1">
+                                                <span className="text-xs text-muted-foreground">
+                                                    Target percentage
+                                                </span>
+                                                <Input
+                                                    type="number"
+                                                    min="0"
+                                                    max="100"
+                                                    step="0.01"
+                                                    value={bucket.target_percentage}
+                                                    onChange={(e) => editBucket(bucket.id, "target_percentage", Number(e.target.value))}
+                                                />
+                                            </label>
+                                            <label className="flex flex-col gap-1">
+                                                <span className="text-xs text-muted-foreground">
+                                                    Alert threshold
+                                                </span>
+                                                <Input
+                                                    type="number"
+                                                    min="0"
+                                                    max="100"
+                                                    step="0.01"
+                                                    value={bucket.alert_threshold}
+                                                    onChange={(e) => editBucket(bucket.id, "alert_threshold", Number(e.target.value))}
+                                                />
+                                            </label>
+                                        </div>
+                                    </div>
+                                ))}
+                            </form>
+                        </CardContent>
+
+                        <Separator />
+
+                        <CardFooter className="flex-col items-stretch gap-3">
+                            <p className={`text-sm ${total > 100 ? "text-destructive" : "text-muted-foreground"}`}>
+                                {planMessage}
+                            </p>
+                            {error && <p className="text-sm text-destructive">{error}</p>}
+                            {notice && <p className="text-sm text-muted-foreground">{notice}</p>}
+                            <Button type="submit" form="bucket-plan" disabled={saving} className="self-start">
+                                {saving ? "Saving..." : "Save"}
+                            </Button>
+                        </CardFooter>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base font-medium">Where your income goes</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            {/* Reads the same local state the inputs write to, so the
+                                dial moves as you type rather than on save. */}
+                            <BucketAllocationDial buckets={buckets} />
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
+        </div>
     )
 }
