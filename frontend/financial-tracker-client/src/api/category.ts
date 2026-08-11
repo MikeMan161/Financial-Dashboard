@@ -17,8 +17,14 @@ export type UpdateCategory = {
     name: string;
 }
 
-export async function getCategories(token:string, bucket_id:string): Promise<CategoryResponse[]> {
-    const response = await apiFetch(`/categories?bucket_id=${bucket_id}`, token, {
+// bucket_id is optional to match the backend, which returns every category when
+// the filter is absent. The transactions page needs the unscoped list so it can
+// group categories under their buckets in one request instead of one per bucket.
+export async function getCategories(token:string, bucket_id?:string): Promise<CategoryResponse[]> {
+    const path = bucket_id
+        ? `/categories?bucket_id=${bucket_id}`
+        : `/categories`;
+    const response = await apiFetch(path, token, {
         method: 'GET',
     });
     return response.json();
