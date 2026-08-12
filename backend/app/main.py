@@ -6,7 +6,7 @@ local development without browser security blocks.
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, users, buckets, categories, transactions, savings_goals, debts, income
+from app.routers import auth, users, buckets, categories, transactions, savings_goals, debts, income, ai
 
 app = FastAPI(
     title="Financial Dashboard API",
@@ -22,6 +22,7 @@ app.include_router(transactions.router)
 app.include_router(savings_goals.router)
 app.include_router(debts.router)
 app.include_router(income.router)
+app.include_router(ai.router)
 
 app.add_middleware(
     CORSMiddleware,

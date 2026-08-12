@@ -1,13 +1,15 @@
 /**
- * The draft a transaction is while it is still in the form, and the conversions
- * around it. This lives outside the dialog so the shape has one home rather than
- * belonging to whichever component happens to render it.
+ * The draft a transaction is while it is still in the form, and the four
+ * conversions around it. This lives outside the dialog because the AI layer
+ * writes the same shape the form does — one type, one validator, one payload
+ * conversion, whichever way the row got there.
  */
+import type { ParsedTransaction } from '@/api/ai'
 import type { CreateTransaction } from '@/api/transaction'
 
-// What the form holds. Every field is a string because that is what an input
-// gives back — parsing and validation happen once, at the submit boundary, not
-// while typing.
+// What the form holds, and what the AI parser returns. Every field is a string
+// because that is what an input gives back — parsing and validation happen once,
+// at the submit boundary, not while typing.
 export type TransactionDraft = {
     id: string                  // row key on the client only, never the DB id
     amount: string
@@ -31,7 +33,7 @@ export function today(): string {
 // list keys that never leave the browser, so a counter is a fine substitute.
 let rowCounter = 0
 
-export function rowId(): string {
+function rowId(): string {
     if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
         return crypto.randomUUID()
     }
@@ -47,6 +49,21 @@ export function emptyDraft(): TransactionDraft {
         merchant: "",
         category_id: null,
         transaction_date: today(),
+    }
+}
+
+// The parser leaves out whatever it wasn't sure about, and a null handed to a
+// controlled input makes React switch that input to uncontrolled mid-render. Every
+// blank turns into "" here, at the one place drafts get made. category_id keeps
+// its null because the draft type allows it and the select reads it as "".
+export function draftFromParsed(parsed: ParsedTransaction): TransactionDraft {
+    return {
+        id: rowId(),
+        amount: parsed.amount ?? "",
+        description: parsed.description ?? "",
+        merchant: parsed.merchant ?? "",
+        category_id: parsed.category_id,
+        transaction_date: parsed.transaction_date ?? today(),
     }
 }
 

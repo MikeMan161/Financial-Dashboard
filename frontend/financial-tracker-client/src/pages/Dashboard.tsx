@@ -10,7 +10,8 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import ManualEntryDialog from '@/components/ManualEntryDialog'
 import type { TransactionDraft } from '@/lib/drafts'
-import { emptyDraft } from '@/lib/drafts'
+import { emptyDraft, draftFromParsed, today } from '@/lib/drafts'
+import { parseTransaction } from '@/api/ai'
 
 
 
@@ -26,6 +27,8 @@ export default function Dashboard({ token, clearToken }: DashboardProps) {
     // Bumped every time the dialog is opened, so React throws the old form
     // instance away and rebuilds it from entryRows instead of reusing stale state.
     const [draftKey, setDraftKey] = useState(0)
+    const [prompt, setPrompt] = useState("")
+    const [isParsing, setIsParsing] = useState(false)
     // Bumped after a save so the bucket effect re-runs and the spent figures pick
     // up the transactions that just landed.
     const [refreshKey, setRefreshKey] = useState(0)
@@ -35,6 +38,30 @@ export default function Dashboard({ token, clearToken }: DashboardProps) {
         setEntryRows(rows)
         setDraftKey((previous) => previous + 1)
         setEntryOpen(true)
+    }
+
+    async function handleParse() {
+        const text = prompt.trim()
+        if (!token || !text || isParsing) return
+
+        setIsParsing(true)
+        try {
+            const parsed = await parseTransaction(text, token, today())
+            // Nothing recognized still opens the dialog on a blank row. Silently
+            // clearing the box would read as the app losing what was typed.
+            const rows = parsed.length > 0 ? parsed.map(draftFromParsed) : [emptyDraft()]
+            openManualEntry(rows)
+            setPrompt("")
+        } catch (err) {
+            if (err instanceof AuthError) {
+                clearToken()
+                navigate("/")
+            } else {
+                console.error(err)
+            }
+        } finally {
+            setIsParsing(false)
+        }
     }
 
     useEffect(() => {
@@ -77,8 +104,20 @@ export default function Dashboard({ token, clearToken }: DashboardProps) {
         ))}
       </div>
       <div className="flex gap-2 mt-auto">
-        <Input placeholder="Enter transaction" />
-        <Button className="rounded-full">Send</Button>
+        <Input
+          placeholder="Enter transaction"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") handleParse() }}
+          disabled={isParsing}
+        />
+        <Button
+          className="rounded-full"
+          onClick={handleParse}
+          disabled={isParsing || prompt.trim() === ""}
+        >
+          {isParsing ? "Reading…" : "Send"}
+        </Button>
       </div>
       <Button
         className="self-center"
@@ -88,6 +127,8 @@ export default function Dashboard({ token, clearToken }: DashboardProps) {
         Manual Entry
       </Button>
 
+      {/* Both triggers land here: the button with one empty row, the AI box with
+          parsed ones. Same dialog, same submit path. */}
       <ManualEntryDialog
         key={draftKey}
         open={entryOpen}
