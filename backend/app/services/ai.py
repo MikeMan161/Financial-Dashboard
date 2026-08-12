@@ -4,15 +4,16 @@ database — the drafts go back to the manual entry form and the user confirms
 them, so a bad guess costs an edit rather than a bad row.
 """
 from datetime import datetime, timezone
+from pathlib import Path
 
 import anthropic
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 
 from app.models.models import Categories, Users
 from app.schemas.ai import ParsedTransaction
 
-load_dotenv(find_dotenv())
+load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
 MODEL = "claude-haiku-4-5-20251001"
 
