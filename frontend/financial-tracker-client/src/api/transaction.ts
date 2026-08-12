@@ -10,11 +10,19 @@ export type TransactionResponse = {
     transaction_date: string;
 }
 
+// Matches TransactionCreate on the backend, which only requires amount. The other
+// four are nullable there, so they are nullable here — a blank merchant is absent,
+// not an empty string.
+//
+// amount travels as a string on purpose. The column is Numeric and the schema is
+// Decimal, and a JSON number would round-trip through a float on the way. Sending
+// the digits the user typed hands Pydantic exactly those digits.
 export type CreateTransaction = {
-    category_id: string;
-    amount: number;
-    description: string;
-    merchant: string;
+    category_id: string | null;
+    amount: string;
+    description: string | null;
+    merchant: string | null;
+    transaction_date: string;
 }
 
 export type UpdateTransaction = {
