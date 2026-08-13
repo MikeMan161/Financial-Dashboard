@@ -33,7 +33,7 @@ Jot is a full-stack personal finance app built around one idea: **budgeting apps
 
 So the primary input is a sentence. An LLM layer parses natural language into a structured transaction: amount, merchant, category, date — validated server-side before it touches the database.
 
-The budgeting model follows Ramit Sethi's Conscious Spending Plan: four envelopes with user-set target percentages rather than a line-item budget for every category.
+The budgeting model follows Ramit Sethi's Conscious Spending Plan: four buckets with user-set target percentages rather than a line-item budget for every category.
 
 | Bucket | Typical target |
 |---|---|
@@ -42,7 +42,7 @@ The budgeting model follows Ramit Sethi's Conscious Spending Plan: four envelope
 | Savings | 5–10% |
 | Guilt-Free Spending | 20–35% |
 
-Targets are guidance, not limits. Jot does not scold you for spending, the whole point of naming an envelope "guilt-free" is that money in it is already accounted for.
+Targets are guidance, not limits. Jot does not scold you for spending, the whole point of naming a bucket "guilt-free" is that money in it is already accounted for.
 
 **Jot never connects to a bank.** There is no account linking and no money movement. It is an advisory and tracking layer, deliberately.
 
@@ -242,7 +242,7 @@ Financial-Dashboard/
 
 **Near term**
 - Alembic migrations — required before the first schema change against live data
-- Migrating from localstorage to httpOnly cookies + refresh-token flow
+- Migrating auth to httpOnly cookies + refresh-token flow
 - Route-level code splitting to cut the initial bundle
 - CloudFront SPA error mapping so deep links survive a refresh
 - Empty-state UI across list views
@@ -266,6 +266,3 @@ Built by **Michael Rivera**, CS student at the University of North Florida.
 
 Written from schema to production deployment as a solo project. Design decisions, architecture, and tradeoffs are documented above because the reasoning is the interesting part.
 
-## License
-
-MIT — see [LICENSE](LICENSE).
