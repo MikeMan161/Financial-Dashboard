@@ -1,6 +1,6 @@
 <div align="center">
 
-# Jot
+# jot
 
 **Personal finance tracking that takes one sentence.**
 
