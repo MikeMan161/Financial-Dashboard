@@ -108,7 +108,7 @@ TLS terminates at the load balancer; the application itself only ever speaks pla
 
 **Debts are modeled as payments against Fixed Costs, not a parallel ledger.** A debt payment is money leaving your account this month. Storing it separately would make the bucket percentages lie.
 
-**The app refuses to start on a missing secret.** No fallback to a dev default. This behaved correctly in production: a missing `DATABASE_URL` produced an immediate startup error naming the exact file and line, instead of a green health check on an environment that would fail later under real traffic.
+**No secret falls back to a dev default.** This behaved correctly in production: a missing `DATABASE_URL` is read at import and produced an immediate startup error naming the exact file and line, instead of a green health check on an environment that would fail later under real traffic. The auth secrets are read at call time, so a missing one surfaces at the first login rather than at boot.
 
 **The health check queries the database.** `/health` runs `SELECT 1` rather than returning a static string, so the load balancer's view of "healthy" reflects the actual stack rather than just "the web server is up."
 
@@ -158,16 +158,13 @@ source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Create `backend/.env`:
+Copy the template and fill in the values — it lists every variable the backend reads:
 
-```env
-DATABASE_URL=postgresql://postgres:password@localhost:5432/jot
-SECRET_KEY=              # generate with: python -c "import secrets; print(secrets.token_hex(32))"
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-ANTHROPIC_API_KEY=
-CORS_ORIGINS=http://localhost:5173
+```bash
+cp .env.example .env
 ```
+
+Generate `SECRET_KEY` with `python -c "import secrets; print(secrets.token_hex(32))"`.
 
 Then, from `backend/`:
 
@@ -186,11 +183,13 @@ cd frontend/financial-tracker-client
 npm install
 ```
 
-Create `.env` in the same directory:
+No configuration is needed — the API URL falls back to `http://localhost:8000`. To point the dev server at a different backend, create `.env` in the same directory:
 
 ```env
 VITE_API_URL=http://localhost:8000
 ```
+
+Production builds read the committed `.env.production` instead.
 
 Then:
 
